@@ -1,7 +1,7 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { randomString } from 'src/utils/randomString';
 
-@Injectable({ scope: Scope.REQUEST })
+@Injectable({ scope: Scope.TRANSIENT })
 // @Injectable()
 export class LifecycleService {
   private lct: string;
@@ -21,6 +21,24 @@ export class LifecycleService {
     this.plct = token;
   }
 
+  // setProcessTokens(plct: string) {
+  //   // if (plct.startsWith('CRON') || this.plct.startsWith('CRON')) {
+  //   // }
+  //   // const eMessage =
+  //   //   'already exist. setProcessTokens should be called once on each process';
+  //   // if (!!this.plct) {
+  //   //   throw new Error(`parentlifecycletoken ${eMessage}`);
+  //   // }
+  //   // if (!!this.lct) {
+  //   //   throw new Error(`lifecycletoken ${eMessage}`);
+  //   // }
+
+  //   this.setParentLifecycleToken(plct);
+  //   const lct = this.generateLifecycleToken();
+  //   console.log({ parentLifecycleToken: plct, lifecycleToken: lct });
+  //   return { parentLifecycleToken: plct, lifecycleToken: lct };
+  // }
+
   setProcessTokens(plct: string) {
     // if (plct.startsWith('CRON') || this.plct.startsWith('CRON')) {
     // }
@@ -35,7 +53,7 @@ export class LifecycleService {
 
     this.setParentLifecycleToken(plct);
     const lct = this.generateLifecycleToken();
-    // console.log({ parentLifecycleToken: plct, lifecycleToken: lct });
+    console.log({ parentLifecycleToken: plct, lifecycleToken: lct });
     return { parentLifecycleToken: plct, lifecycleToken: lct };
   }
 

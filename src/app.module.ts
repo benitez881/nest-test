@@ -1,24 +1,29 @@
-import { Inject, MiddlewareConsumer, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { LifecycleService } from './tokens/tokens.service';
-import { LifecycleMiddleware } from './tokens/tokens.middleware';
 import { CronModule } from './cron/cron.module';
 import Axios from 'axios';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SchedulerService } from './tokens/scheduler.service';
+import {
+  AsyncContext,
+  AsyncContextModule,
+} from '@nestjs-steroids/async-context';
+import { AsyncContextInterceptor } from './async-context.interceptor';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 
 @Module({
-  imports: [CronModule, ScheduleModule.forRoot()],
+  imports: [CronModule, ScheduleModule.forRoot(), AsyncContextModule.forRoot()],
   controllers: [AppController],
   providers: [
     AppService,
     SchedulerService,
     LifecycleService,
     {
-      inject: [LifecycleService],
+      inject: [AsyncContext],
       provide: 'axios-int',
-      useFactory: (lifecycleService: LifecycleService) => {
+      useFactory: (asyncContext: AsyncContext<string, string>) => {
         const axios = Axios.create({
           baseURL: 'http://localhost:3001',
           headers: {
@@ -27,9 +32,9 @@ import { SchedulerService } from './tokens/scheduler.service';
         });
 
         axios.interceptors.request.use(async (config) => {
-          config.headers['parentLifecycleToken'] =
-            lifecycleService.parentLifecycleToken;
-          config.headers['lifecycleToken'] = lifecycleService.lifecycleToken;
+          const tokens = JSON.parse(asyncContext.get('traceId'));
+          config.headers['parentLifecycleToken'] = tokens.parentLifecycleToken;
+          config.headers['lifecycleToken'] = tokens.lifecycleToken;
 
           return config;
         });
@@ -37,22 +42,20 @@ import { SchedulerService } from './tokens/scheduler.service';
         return axios;
       },
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: AsyncContextInterceptor,
+    },
   ],
 })
 export class AppModule {
-  constructor(
-    @Inject(SchedulerService) private schedulerService: SchedulerService,
-  ) {}
+  constructor() {} // @Inject(SchedulerService) private schedulerService: SchedulerService,
 
-  configure(consumer: MiddlewareConsumer) {
-    consumer.apply(LifecycleMiddleware).forRoutes('*'); // Apply middleware globally
-  }
+  // configure(consumer: MiddlewareConsumer) {
+  //   consumer.apply(LifecycleMiddleware).forRoutes('*'); // Apply middleware globally
+  // }
 
-  onModuleInit() {
-    // console.log('appmoduleinit');
-  }
-
-  async onApplicationBootstrap() {
-    this.schedulerService.modifyCronTasks();
-  }
+  // async onApplicationBootstrap() {
+  //   this.schedulerService.modifyCronTasks();
+  // }
 }
