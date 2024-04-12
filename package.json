@@ -30,9 +30,11 @@
     "axios-rate-limit": "^1.3.0",
     "axios-retry": "^4.1.0",
     "cors": "^2.8.5",
+    "nest-winston": "^1.9.4",
     "reflect-metadata": "^0.2.0",
     "rollun-ts-utils": "^0.0.12",
-    "rxjs": "^7.8.1"
+    "rxjs": "^7.8.1",
+    "winston": "^3.13.0"
   },
   "devDependencies": {
     "@nestjs/cli": "^10.0.0",

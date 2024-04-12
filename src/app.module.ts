@@ -5,7 +5,6 @@ import { LifecycleService } from './tokens/tokens.service';
 import { CronModule } from './cron/cron.module';
 import Axios from 'axios';
 import { ScheduleModule } from '@nestjs/schedule';
-import { SchedulerService } from './tokens/scheduler.service';
 import {
   AsyncContext,
   AsyncContextModule,
@@ -18,7 +17,6 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
   controllers: [AppController],
   providers: [
     AppService,
-    SchedulerService,
     LifecycleService,
     {
       inject: [AsyncContext],

@@ -4,7 +4,9 @@ import { CronService } from './cron.service';
 import { wait } from 'rollun-ts-utils';
 import { LifecycleService } from 'src/tokens/tokens.service';
 import { AsyncContext } from '@nestjs-steroids/async-context';
-import { ExtendedCron } from './cron.decorator';
+import { CronWithTokens } from 'src/tokens/cron.decorator';
+import { TimeoutWithTokens } from 'src/tokens/timeout.decorator';
+import { IntervalWithTokens } from 'src/tokens/interval.decorator';
 
 @Injectable()
 export class CronSchedule {
@@ -14,7 +16,7 @@ export class CronSchedule {
     private readonly asyncContext: AsyncContext<string, string>,
   ) {}
 
-  @ExtendedCron(CronExpression.EVERY_10_SECONDS)
+  @CronWithTokens(CronExpression.EVERY_10_SECONDS)
   async refreshCacheLastDay() {
     await wait(6000);
 
@@ -30,14 +32,14 @@ export class CronSchedule {
     // });
   }
 
-  @ExtendedCron(CronExpression.EVERY_10_SECONDS)
+  @CronWithTokens(CronExpression.EVERY_10_SECONDS)
   async refreshCacheLastDay2() {
     await wait(6000);
 
-    // console.log(
-    //   "this.asyncContext.get('traceId')2;",
-    //   this.asyncContext.get('traceId'),
-    // );
+    console.log(
+      "this.asyncContext.get('traceId')2;",
+      this.asyncContext.get('traceId'),
+    );
 
     this.cronService.getTestCron();
     // console.log('CronExpression.EVERY_10_SECONDS', {
@@ -45,19 +47,22 @@ export class CronSchedule {
     //   parentLifecycleToken: this.lifecycleService.parentLifecycleToken,
     // });
   }
-  // @Cron(CronExpression.EVERY_MINUTE)
-  // async refreshCacheLastDay2() {
-  //   await wait(5000);
 
+  // @TimeoutWithTokens(0)
+  // async recacheAllOrders() {
+  //   console.log(
+  //     "this.asyncContext.get('traceId');timeout",
+  //     this.asyncContext.get('traceId'),
+  //   );
   //   this.cronService.getTestCron();
-  //   console.log('CronExpression.EVERY_10_SECONDS2', {
-  //     lifecycleToken: this.lifecycleService.lifecycleToken,
-  //     parentLifecycleToken: this.lifecycleService.parentLifecycleToken,
-  //   });
   // }
 
-  //   @Timeout(0)
-  //   async recacheAllOrders() {
-  //     await this.cache.cacheNewOrders('4 weeks', true);
-  //   }
+  // @IntervalWithTokens(5000)
+  // async recacheAllOrders2() {
+  //   console.log(
+  //     "this.asyncContext.get('traceId');interval",
+  //     this.asyncContext.get('traceId'),
+  //   );
+  //   this.cronService.getTestCron();
+  // }
 }
