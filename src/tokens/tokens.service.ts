@@ -53,7 +53,7 @@ export class LifecycleService {
 
     this.setParentLifecycleToken(plct);
     const lct = this.generateLifecycleToken();
-    console.log({ parentLifecycleToken: plct, lifecycleToken: lct });
+    // console.log({ parentLifecycleToken: plct, lifecycleToken: lct });
     return { parentLifecycleToken: plct, lifecycleToken: lct };
   }
 

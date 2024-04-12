@@ -12,10 +12,10 @@ export class AppController {
 
   @Get()
   async getHello(): Promise<any> {
-    console.log(
-      'this.asyncContext.get(traceId)',
-      this.asyncContext.get('traceId'),
-    );
+    // console.log(
+    //   'this.asyncContext.get(traceId)',
+    //   this.asyncContext.get('traceId'),
+    // );
     return await this.appService.getHello();
   }
 
@@ -23,9 +23,9 @@ export class AppController {
   async getTest(): Promise<any> {
     await wait(5000);
     this.appService.getTest();
-    console.log(
-      'this.asyncContext.get(traceId)',
-      this.asyncContext.get('traceId'),
-    );
+    // console.log(
+    //   'this.asyncContext.get(traceId)',
+    //   this.asyncContext.get('traceId'),
+    // );
   }
 }

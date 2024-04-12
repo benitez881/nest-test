@@ -12,10 +12,10 @@ export class AppService {
 
   async getHello(): Promise<any> {
     await wait(5000);
-    console.log('etetetet', {
-      parentLifecycleToken: this.lifecycleService.parentLifecycleToken,
-      lifecycleToken: this.lifecycleService.lifecycleToken,
-    });
+    // console.log('etetetet', {
+    //   parentLifecycleToken: this.lifecycleService.parentLifecycleToken,
+    //   lifecycleToken: this.lifecycleService.lifecycleToken,
+    // });
 
     return {
       parentLifecycleToken: this.lifecycleService.parentLifecycleToken,
@@ -24,12 +24,12 @@ export class AppService {
   }
 
   getTest(): any {
-    console.trace();
+    // console.trace();
     this.axios.get('/');
   }
 
   getTestCron(): any {
-    console.trace();
+    // console.trace();
     this.axios.get('/');
   }
 }

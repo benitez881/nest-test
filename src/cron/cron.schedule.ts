@@ -34,10 +34,10 @@ export class CronSchedule {
   async refreshCacheLastDay2() {
     await wait(6000);
 
-    console.log(
-      "this.asyncContext.get('traceId')2;",
-      this.asyncContext.get('traceId'),
-    );
+    // console.log(
+    //   "this.asyncContext.get('traceId')2;",
+    //   this.asyncContext.get('traceId'),
+    // );
 
     this.cronService.getTestCron();
     // console.log('CronExpression.EVERY_10_SECONDS', {

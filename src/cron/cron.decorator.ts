@@ -27,7 +27,7 @@ export const ExtendedCron = (cronTime: string): MethodDecorator => {
       const tokens = lifecycleService.setProcessTokens('CRON');
 
       asyncContext.register();
-      console.log('tokens', tokens);
+      // console.log('tokens', tokens);
       asyncContext.set('traceId', JSON.stringify(tokens));
       const result = await originalMethod.apply(this, args);
 
