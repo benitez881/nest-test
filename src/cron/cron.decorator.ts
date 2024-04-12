@@ -1,9 +1,9 @@
 import { Inject } from '@nestjs/common';
-import { Interval as NestInterval } from '@nestjs/schedule';
+import { Cron as NestCron } from '@nestjs/schedule';
 import { AsyncContext } from '@nestjs-steroids/async-context';
-import { LifecycleService } from './tokens.service';
+import { LifecycleService } from 'src/tokens/tokens.service';
 
-export const IntervalWithTokens = (Interval: number): MethodDecorator => {
+export const ExtendedCron = (cronTime: string): MethodDecorator => {
   return (target, key, descriptor: PropertyDescriptor) => {
     const originalMethod = descriptor.value;
 
@@ -24,16 +24,16 @@ export const IntervalWithTokens = (Interval: number): MethodDecorator => {
         asyncContext = (servicesContainer as any).asyncContext;
       }
 
-      const tokens = lifecycleService.setProcessTokens('INTERVAL');
+      const tokens = lifecycleService.setProcessTokens('CRON');
 
       asyncContext.register();
-      console.log('tokens', tokens);
+      // console.log('tokens', tokens);
       asyncContext.set('traceId', JSON.stringify(tokens));
       const result = await originalMethod.apply(this, args);
 
       return result;
     };
 
-    NestInterval(Interval)(target, key, descriptor);
+    NestCron(cronTime)(target, key, descriptor);
   };
 };

@@ -48,21 +48,21 @@ export class CronSchedule {
     // });
   }
 
-  // @TimeoutWithTokens(0)
-  // async recacheAllOrders() {
-  //   console.log(
-  //     "this.asyncContext.get('traceId');timeout",
-  //     this.asyncContext.get('traceId'),
-  //   );
-  //   this.cronService.getTestCron();
-  // }
+  @TimeoutWithTokens(0)
+  async recacheAllOrders() {
+    console.log(
+      "this.asyncContext.get('traceId');timeout",
+      this.asyncContext.get('traceId'),
+    );
+    this.cronService.getTestCron();
+  }
 
-  // @IntervalWithTokens(5000)
-  // async recacheAllOrders2() {
-  //   console.log(
-  //     "this.asyncContext.get('traceId');interval",
-  //     this.asyncContext.get('traceId'),
-  //   );
-  //   this.cronService.getTestCron();
-  // }
+  @IntervalWithTokens(5000)
+  async recacheAllOrders2() {
+    console.log(
+      "this.asyncContext.get('traceId');interval",
+      this.asyncContext.get('traceId'),
+    );
+    this.cronService.getTestCron();
+  }
 }

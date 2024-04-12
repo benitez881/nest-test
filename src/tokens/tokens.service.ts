@@ -23,7 +23,7 @@ export class LifecycleService {
   }
 
   private setParentLifecycleToken(token: string) {
-    if (token === 'CRON') {
+    if (token === 'CRON' || token === 'TIMEOUT' || token === 'INTERVAL') {
       this.plct = this.generateToken(token);
       return this.plct;
     }
@@ -68,9 +68,9 @@ export class LifecycleService {
   }
 
   setProcessTokens(plct: string) {
-    console.log({ plct2: plct, plct: this.plct, lct: this.lct });
-
-    this.validateTokensCreation();
+    if (plct !== 'CRON' && plct !== 'TIMEOUT' && plct !== 'INTERVAL') {
+      this.validateTokensCreation();
+    }
 
     const processTokens = this.setTokens(plct);
     return processTokens;
