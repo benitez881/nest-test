@@ -9,8 +9,9 @@ import {
   AsyncContext,
   AsyncContextModule,
 } from '@nestjs-steroids/async-context';
-import { AsyncContextInterceptor } from './async-context.interceptor';
 import { APP_INTERCEPTOR } from '@nestjs/core';
+import { LIFECYCLE_ID, TokensContext } from './tokens/utils';
+import { AsyncContextInterceptor } from './tokens/async-context.interceptor';
 
 @Module({
   imports: [CronModule, ScheduleModule.forRoot(), AsyncContextModule.forRoot()],
@@ -21,7 +22,7 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
     {
       inject: [AsyncContext],
       provide: 'axios-int',
-      useFactory: (asyncContext: AsyncContext<string, string>) => {
+      useFactory: (asyncContext: AsyncContext<string, TokensContext>) => {
         const axios = Axios.create({
           baseURL: 'http://localhost:3001',
           headers: {
@@ -30,9 +31,10 @@ import { APP_INTERCEPTOR } from '@nestjs/core';
         });
 
         axios.interceptors.request.use(async (config) => {
-          const tokens = JSON.parse(asyncContext.get('traceId'));
+          const tokens = asyncContext.get(LIFECYCLE_ID);
           config.headers['parentLifecycleToken'] = tokens.parentLifecycleToken;
           config.headers['lifecycleToken'] = tokens.lifecycleToken;
+          console.log('config.headers', config.headers);
 
           return config;
         });

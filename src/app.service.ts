@@ -2,11 +2,14 @@ import { Inject, Injectable } from '@nestjs/common';
 import { LifecycleService } from './tokens/tokens.service';
 import { AxiosInstance } from 'axios';
 import { wait } from 'rollun-ts-utils';
+import { AsyncContext } from '@nestjs-steroids/async-context';
+import { TokensContext, LIFECYCLE_ID } from './tokens/utils';
 
 @Injectable()
 export class AppService {
   constructor(
-    @Inject(LifecycleService) private lifecycleService: LifecycleService,
+    @Inject(AsyncContext)
+    private asyncContext: AsyncContext<string, TokensContext>,
     @Inject('axios-int') private axios: AxiosInstance,
   ) {}
 
@@ -16,10 +19,10 @@ export class AppService {
     //   parentLifecycleToken: this.lifecycleService.parentLifecycleToken,
     //   lifecycleToken: this.lifecycleService.lifecycleToken,
     // });
-
+    const tokens = this.asyncContext.get(LIFECYCLE_ID);
     return {
-      parentLifecycleToken: this.lifecycleService.parentLifecycleToken,
-      lifecycleToken: this.lifecycleService.lifecycleToken,
+      parentLifecycleToken: tokens.parentLifecycleToken,
+      lifecycleToken: tokens.lifecycleToken,
     };
   }
 

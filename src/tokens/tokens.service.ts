@@ -1,10 +1,13 @@
-import { Injectable, Scope } from '@nestjs/common';
+import { Inject } from '@nestjs/common';
 import { randomBytes } from 'crypto';
+import { TokensContext, CRON, INTERVAL, TIMEOUT, LIFECYCLE_ID } from './utils';
+import { AsyncContext } from '@nestjs-steroids/async-context';
 
-@Injectable({ scope: Scope.TRANSIENT })
 export class LifecycleService {
-  private lct: string;
-  private plct: string;
+  constructor(
+    @Inject(AsyncContext)
+    private asyncContext: AsyncContext<string, TokensContext>,
+  ) {}
 
   private generateToken(prefix = ''): string {
     const length = 20 - prefix.length;
@@ -14,73 +17,61 @@ export class LifecycleService {
 
   private generateLifecycleToken(): string {
     const lct = this.generateToken();
-    this.setLifecycleToken(lct);
     return lct;
   }
 
-  private setLifecycleToken(token: string) {
-    this.lct = token;
-  }
-
   private setParentLifecycleToken(token: string) {
-    if (token === 'CRON' || token === 'TIMEOUT' || token === 'INTERVAL') {
-      this.plct = this.generateToken(token);
-      return this.plct;
+    if (token === CRON || token === TIMEOUT || token === INTERVAL) {
+      const plct = this.generateToken(token);
+      return plct;
     }
 
     if (!token) {
-      this.plct = this.generateToken('NONE');
-      return this.plct;
+      const plct = this.generateToken('NONE');
+      return plct;
     }
 
-    this.plct = token;
-    return this.plct;
+    const plct = token;
+    return plct;
   }
 
   private validateTokensCreation() {
     const eMessage =
       'already exist. setProcessTokens should be called once on each process';
-
-    if (!!this.plct || !!this.lct) {
-      const message = `${!!this.plct && 'parentlifecycletoken'} ${
-        !!this.lct && 'lifecycletoken'
-      } ${eMessage}.`;
+    const context = this.asyncContext.get(LIFECYCLE_ID);
+    if (!!context?.parentLifecycleToken || !!context?.lifecycleToken) {
+      const message = `${
+        !!context?.parentLifecycleToken && 'parentlifecycletoken'
+      } ${!!context?.lifecycleToken && 'lifecycletoken'} ${eMessage}.`;
 
       // this.logger?.error(
       //   'LifecycleService setProcessTokens should be called once on each process',
-      //   { parentLifecycleToken: this.plct, lifecycleToken: this.lct, message },
+      //   {
+      //     parentLifecycleToken: context?.parentLifecycleToken,
+      //     lifecycleToken: context?.lifecycleToken,
+      //     message,
+      //   },
       // );
 
       throw new Error(message);
     }
   }
 
-  private setTokens(token: string) {
-    const plct = this.setParentLifecycleToken(token);
-    const lct = this.generateLifecycleToken();
-
-    // this.logger?.debug('LifecycleService setProcessTokens', {
-    //   parentLifecycleToken: plct,
-    //   lifecycleToken: lct,
-    // });
-
-    return { parentLifecycleToken: plct, lifecycleToken: lct };
-  }
-
   setProcessTokens(plct: string) {
-    if (plct !== 'CRON' && plct !== 'TIMEOUT' && plct !== 'INTERVAL') {
-      this.validateTokensCreation();
-    }
+    this.asyncContext.register();
 
-    const processTokens = this.setTokens(plct);
+    this.validateTokensCreation();
+
+    const parentLifecycleToken = this.setParentLifecycleToken(plct);
+    const lifecycleToken = this.generateToken();
+
+    const processTokens = {
+      parentLifecycleToken,
+      lifecycleToken,
+    };
+
+    this.asyncContext.set(LIFECYCLE_ID, processTokens);
+
     return processTokens;
-  }
-
-  get lifecycleToken() {
-    return this.lct;
-  }
-
-  get parentLifecycleToken() {
-    return this.plct;
   }
 }
